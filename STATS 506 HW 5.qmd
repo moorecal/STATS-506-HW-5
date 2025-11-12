@@ -1,0 +1,22 @@
+---
+title: "STATS 506 HW 5"
+author: "Calder Moore"
+format: pdf
+editor: visual
+---
+
+## Problem 1 - OOP Programming
+
+### a)
+
+```{r}
+
+```
+
+### b)
+
+```{r}
+
+```
+
+
