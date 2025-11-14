@@ -249,6 +249,36 @@ waldCI(level = 0.95, mean = "c", sterr = "hello")
 
 ## Problem 2 - Plotly
 
+First do the plot to show how many major and minor spikes there are. Just using $\texttt{add_markers}$, $\texttt{add_lines}$, and $\texttt{layout}$ to make a similar plot.
+
+```{r}
+library(plotly)
+library(dplyr)
+
+#remove the S4 mean from earlier in Problem 1
+removeGeneric("mean")
+
+covid <- read.csv("us-states.txt")
+covid$date <- as.Date(covid$date)
+
+case_mean <- covid %>%
+  group_by(date) %>%
+  summarise(cases_avg = mean(cases_avg, na.rm = TRUE))
+
+
+plot_ly() %>%
+  add_markers(data = covid, x = ~date, y = ~cases, name = "Cases") %>%
+  add_lines(data = case_mean, x = ~date, y = ~cases_avg, line = list(color = "red", width = 3),
+    name = "Mean Cases") %>%
+  layout(title = "US Covid Cases", xaxis = list(
+      title = "Date",
+      tickformat = "%b %Y",
+      dtick = "M6"),
+    yaxis = list(title = "Cases")
+  )
+```
+
+Now for the wrapped plots that are by state, we can use $\texttt{subplot}$.
 
 
 
