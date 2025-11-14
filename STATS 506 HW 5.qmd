@@ -1,7 +1,7 @@
 ---
 title: "STATS 506 HW 5"
 author: "Calder Moore"
-format: pdf
+format: html
 editor: visual
 ---
 
