@@ -249,6 +249,8 @@ waldCI(level = 0.95, mean = "c", sterr = "hello")
 
 ## Problem 2 - Plotly
 
+### a)
+
 First do the plot to show how many major and minor spikes there are. Just using $\texttt{add_markers}$, $\texttt{add_lines}$, and $\texttt{layout}$ to make a similar plot.
 
 ```{r}
@@ -278,9 +280,71 @@ plot_ly() %>%
   )
 ```
 
+### b)
+
 Now for the wrapped plots that are by state, we can use $\texttt{subplot}$.
 
+```{r, fig.width=10, fig.height=8}
+states <- covid %>%
+  group_by(state) %>%
+  summarise(rate_avg = mean(cases_avg_per_100k, na.rm = TRUE)) %>%
+  arrange(desc(rate_avg))
+  
+states$state[1:3]
 
+states$state[(nrow(states)-2):nrow(states)]
+
+case_states <- covid %>%
+  filter(state %in% c(states$state[1:3], states$state[(nrow(states)-2):nrow(states)]))
+
+#function to build the list of plots to feed to subplot
+plots <- lapply(unique(case_states$state), function(st) {
+  
+  each_state <- case_states %>% filter(state == st)
+  
+  plot_ly(each_state, x = ~date, y = ~cases, type = "scatter", mode = "markers", name = st) %>%
+    layout(title = st, xaxis = list(title = list(text = "Date", standoff = 10), tickformat = "%Y"), 
+           yaxis = list(title = "Cases")
+    )
+})
+
+#make similar layout to facet with subplot
+subplot(plots, nrows = 2, shareX = FALSE, shareY = FALSE, titleX = TRUE, titleY = TRUE) %>%
+  layout(title = "Covid Cases", margin = list(t = 80, b = 40, l = 60, r = 40))
+```
+
+### c)
+
+Now plots to see the first five states that experienced major spikes.
+
+```{r}
+state_list <- unique(covid$state)
+
+#smaller groups since the plot gets too crowded
+state_groups <- split(state_list, ceiling(seq_along(state_list)/6))
+
+
+plots2 <- lapply(state_groups, function(group) {
+  
+  plots <- lapply(group, function(st) {
+  each_state <- covid %>% filter(state == st)
+  
+  plot_ly(each_state, x = ~date, y = ~cases, type = "scatter", mode = "markers", name = st) %>%
+    layout(title = st, xaxis = list(title = list(text = "Date", standoff = 10), tickformat = "%Y"), 
+           yaxis = list(title = "Cases")
+    )
+  })
+
+#make similar layout to facet with subplot
+subplot(plots, nrows = 2, shareX = FALSE, shareY = FALSE, titleX = TRUE, titleY = TRUE) %>%
+  layout(title = "Covid Cases (Top 3 and Bottom 3 States by Rate)", margin = list(t = 80, b = 40, l = 60, r = 40))
+
+})
+
+for(i in 1:length(plots2)){
+  print(plots2[[i]])
+}
+```
 
 
 
